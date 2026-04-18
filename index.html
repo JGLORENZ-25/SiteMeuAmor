@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2b2b2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Nós dois</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #2b2b2e;
+      --paper: #f5f0e8;
+      --accent: #c9a87c;
+      --text: #2c2420;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      min-height: 100dvh;
+    }
+
+    body {
+      font-family: "Nunito", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Camada de polaroids no fundo */
+    .polaroid-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .polaroid {
+      position: absolute;
+      width: min(140px, 28vw);
+      padding: 10px 10px 36px;
+      background: var(--paper);
+      box-shadow:
+        0 4px 6px var(--shadow),
+        0 12px 28px var(--shadow);
+      transform: rotate(var(--rot, 0deg));
+      top: var(--y, 50%);
+      left: var(--x, 50%);
+      opacity: 0.92;
+    }
+
+    .polaroid.p1 { --x: 4%; --y: 8%; --rot: -7deg; }
+    .polaroid.p2 { --x: 78%; --y: 12%; --rot: 5deg; }
+    .polaroid.p3 { --x: 10%; --y: 55%; --rot: 4deg; }
+    .polaroid.p4 { --x: 82%; --y: 48%; --rot: -6deg; }
+    .polaroid.p5 { --x: 3%; --y: 78%; --rot: 8deg; }
+    .polaroid.p6 { --x: 72%; --y: 82%; --rot: -4deg; }
+
+    @media (max-width: 600px) {
+      .polaroid {
+        width: min(92px, 26vw);
+        padding: 7px 7px 26px;
+        opacity: 0.78;
+      }
+      .polaroid.p1 { --x: 1%; --y: 6%; --rot: -5deg; }
+      .polaroid.p2 { --x: 76%; --y: 8%; --rot: 4deg; }
+      .polaroid.p3 { --x: 4%; --y: 42%; --rot: 3deg; }
+      .polaroid.p4 { --x: 78%; --y: 38%; --rot: -5deg; }
+      .polaroid.p5 { --x: 0%; --y: 72%; --rot: 6deg; }
+      .polaroid.p6 { --x: 68%; --y: 76%; --rot: -3deg; }
+    }
+
+    @media (max-width: 380px) {
+      .polaroid.p3,
+      .polaroid.p4 {
+        opacity: 0.55;
+      }
+    }
+
+    .polaroid img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background: #ddd;
+    }
+
+    /* Sem foto: mostra um cinza suave */
+    .polaroid img:not([src]),
+    .polaroid img[src=""] {
+      min-height: 100px;
+      background: linear-gradient(145deg, #e8e4dc, #d4cfc5);
+    }
+
+    /* Conteúdo principal */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      min-height: 100dvh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(1.25rem, env(safe-area-inset-top))
+        max(1rem, env(safe-area-inset-right))
+        max(1.5rem, env(safe-area-inset-bottom))
+        max(1rem, env(safe-area-inset-left));
+    }
+
+    .card {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      padding: 2.5rem 1.75rem;
+      background: rgba(245, 240, 232, 0.94);
+      border-radius: 16px;
+      box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.08),
+        0 24px 48px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 1.75rem 1.25rem 2rem;
+        border-radius: 20px;
+      }
+    }
+
+    h1 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: #5c534c;
+      margin-bottom: 2rem;
+    }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 480px) {
+      .timer {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+      }
+    }
+
+    .unit {
+      padding: 1rem 0.5rem;
+      border: 1px solid rgba(44, 36, 32, 0.12);
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .unit {
+        padding: 0.75rem 0.35rem;
+        border-radius: 14px;
+      }
+    }
+
+    .unit__value {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: clamp(1.75rem, 6vw, 2.5rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .unit__label {
+      margin-top: 0.35rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7a726a;
+    }
+
+    @media (max-width: 600px) {
+      .unit__label {
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+      }
+    }
+
+    .footer-note {
+      margin-top: 1.75rem;
+      font-size: 0.8rem;
+      color: #8a8278;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fotos: coloque foto1.png … foto6.png na mesma pasta do index.html -->
+  <div class="polaroid-layer" aria-hidden="true">
+    <figure class="polaroid p1">
+      <img src="foto1.png" alt="" />
+    </figure>
+    <figure class="polaroid p2">
+      <img src="foto2.png" alt="" />
+    </figure>
+    <figure class="polaroid p3">
+      <img src="foto3.png" alt="" />
+    </figure>
+    <figure class="polaroid p4">
+      <img src="foto4.png" alt="" />
+    </figure>
+    <figure class="polaroid p5">
+      <img src="foto5.png" alt="" />
+    </figure>
+    <figure class="polaroid p6">
+      <img src="foto6.png" alt="" />
+    </figure>
+  </div>
+
+  <main class="wrap">
+    <div class="card">
+      <h1>Tempo de nós dois</h1>
+      <p class="subtitle">Desde 12 de março de 2023</p>
+
+      <div class="timer" id="timer">
+        <div class="unit">
+          <div class="unit__value" id="d">—</div>
+          <div class="unit__label">Dias</div>
+        </div>
+        <div class="unit">
+          <div class="unit__value" id="h">—</div>
+          <div class="unit__label">Horas</div>
+        </div>
+        <div class="unit">
+          <div class="unit__value" id="m">—</div>
+          <div class="unit__label">Minutos</div>
+        </div>
+        <div class="unit">
+          <div class="unit__value" id="s">—</div>
+          <div class="unit__label">Segundos</div>
+        </div>
+      </div>
+
+      <p class="footer-note">Cada segundo a mais é um motivo a mais para sorrir.</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      // Data de início: 12 de março de 2023, 00:00:00 (horário local)
+      var inicio = new Date(2023, 2, 12, 0, 0, 0, 0);
+
+      function atualizar() {
+        var agora = new Date();
+        var diff = agora - inicio;
+        if (diff < 0) {
+          document.getElementById("d").textContent = "0";
+          document.getElementById("h").textContent = "0";
+          document.getElementById("m").textContent = "0";
+          document.getElementById("s").textContent = "0";
+          return;
+        }
+        var totalSeg = Math.floor(diff / 1000);
+        var dias = Math.floor(totalSeg / 86400);
+        var horas = Math.floor((totalSeg % 86400) / 3600);
+        var mins = Math.floor((totalSeg % 3600) / 60);
+        var segs = totalSeg % 60;
+
+        document.getElementById("d").textContent = String(dias);
+        document.getElementById("h").textContent = String(horas).padStart(2, "0");
+        document.getElementById("m").textContent = String(mins).padStart(2, "0");
+        document.getElementById("s").textContent = String(segs).padStart(2, "0");
+      }
+
+      atualizar();
+      setInterval(atualizar, 1000);
+    })();
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
