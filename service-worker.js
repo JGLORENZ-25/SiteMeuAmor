@@ -1,5 +1,5 @@
 /* Service worker — PWA (cache + requisitos de instalação) */
-var CACHE_NAME = "nosso-tempo-v8";
+var CACHE_NAME = "nosso-tempo-v9";
 
 function basePath() {
   return new URL(".", self.location.href).href;
