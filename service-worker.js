@@ -1,5 +1,5 @@
 /* Service worker — PWA (cache + requisitos de instalação) */
-var CACHE_NAME = "nosso-tempo-v6";
+var CACHE_NAME = "nosso-tempo-v8";
 
 function basePath() {
   return new URL(".", self.location.href).href;
@@ -12,9 +12,7 @@ function urlJoin(name) {
 var PRECACHE_URLS = [
   "index.html",
   "manifest.json",
-  "sw.js",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
+  "service-worker.js",
   "logo.png",
   "foto1.png",
   "foto2.png",
